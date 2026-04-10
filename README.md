@@ -1,2 +1,2 @@
 # Aero-Player
-Aero player is a music app in development 
+Aero player is a music app in development

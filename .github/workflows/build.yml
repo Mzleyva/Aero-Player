@@ -48,10 +48,11 @@ jobs:
       - name: 🔑 Permisos gradlew
         run: chmod +x gradlew
 
-      - name: 📦 Gradle wrapper jar
+      - name: 📦 Descargar gradle-wrapper.jar si falta
         run: |
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-            gradle wrapper --gradle-version 8.9 || true
+            curl -L -o gradle/wrapper/gradle-wrapper.jar \
+              https://github.com/gradle/gradle/raw/v8.11.1/gradle/wrapper/gradle-wrapper.jar || true
           fi
 
       - name: 🏗️ Compilar Debug APK

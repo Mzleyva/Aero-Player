@@ -51,7 +51,7 @@ jobs:
       - name: 📦 Gradle wrapper jar
         run: |
           if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-            gradle wrapper --gradle-version 8.4 || true
+            gradle wrapper --gradle-version 8.9 || true
           fi
 
       - name: 🏗️ Compilar Debug APK

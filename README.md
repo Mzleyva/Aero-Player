@@ -2,7 +2,7 @@
 
 ✨ Features
 - 🎵 Local offline music playback
-- 📱 Modern YouTube Music-like interface
+- 📱 Modern interface
 - 🔍 Smart search functionality
 - 📚 Library management
 - ⚙️ Advanced playback controls

@@ -23,10 +23,8 @@ jobs:
           fi
           echo "✅ ZIP encontrado: $ZIP"
           unzip -q "$ZIP" -d proyecto_temp
-          cd proyecto_temp
-          INNER=$(ls -1 | head -1)
-          cd ..
           COUNT=$(ls proyecto_temp | wc -l)
+          INNER=$(ls -1 proyecto_temp | head -1)
           if [ "$COUNT" -eq 1 ] && [ -d "proyecto_temp/$INNER" ]; then
             echo "Carpeta contenedora: $INNER"
             cp -r "proyecto_temp/$INNER/." .
@@ -34,6 +32,25 @@ jobs:
             cp -r proyecto_temp/. .
           fi
           ls -la
+
+      # ── IMPORTANTE: estos 3 pasos DEBEN ir después del unzip ──────────────
+      # El gradlew y gradle/wrapper/ salen del ZIP. Si Setup Gradle se ejecuta
+      # antes del unzip, no existe el wrapper y lanza ClassNotFoundException.
+
+      - name: 🔑 Permisos gradlew
+        run: chmod +x gradlew
+
+      - name: 📦 Descargar gradle-wrapper.jar si falta
+        run: |
+          mkdir -p gradle/wrapper
+          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "⬇️  Descargando gradle-wrapper.jar..."
+            curl -fL -o gradle/wrapper/gradle-wrapper.jar \
+              https://github.com/gradle/gradle/raw/v8.11.1/gradle/wrapper/gradle-wrapper.jar
+            echo "✅ JAR descargado: $(du -sh gradle/wrapper/gradle-wrapper.jar)"
+          else
+            echo "✅ gradle-wrapper.jar ya existe"
+          fi
 
       - name: ☕ Configurar JDK 17
         uses: actions/setup-java@v4
@@ -44,16 +61,6 @@ jobs:
 
       - name: 🔧 Setup Gradle
         uses: gradle/actions/setup-gradle@v3
-
-      - name: 🔑 Permisos gradlew
-        run: chmod +x gradlew
-
-      - name: 📦 Descargar gradle-wrapper.jar si falta
-        run: |
-          if [ ! -f "gradle/wrapper/gradle-wrapper.jar" ]; then
-            curl -L -o gradle/wrapper/gradle-wrapper.jar \
-              https://github.com/gradle/gradle/raw/v8.11.1/gradle/wrapper/gradle-wrapper.jar || true
-          fi
 
       - name: 🏗️ Compilar Debug APK
         run: ./gradlew assembleDebug --no-daemon --stacktrace
